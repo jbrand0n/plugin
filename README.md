@@ -1,0 +1,4 @@
+plugin
+======
+
+Dashboard stuff
