@@ -1,0 +1,24 @@
+.row.memberships.headers {
+  font-weight: bold; }
+
+.row.memberships {
+  margin-bottom: 10px; }
+  .row.memberships .field {
+    display: inline-block;
+    clear: both; }
+  .row.memberships .mem_tag {
+    width: 380px; }
+  .row.memberships .mem_level {
+    width: 50px; }
+  .row.memberships .mem_name {
+    width: 200px; }
+  .row.memberships .login_page,
+  .row.memberships .logout_page {
+    width: 200px; }
+  .row.memberships > div {
+    padding-right: 10px; }
+  .row.memberships .dashicons {
+    cursor: pointer;
+    margin: 5px 0 0 5px; }
+    .row.memberships .dashicons:hover {
+      color: red; }

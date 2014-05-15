@@ -1,0 +1,26 @@
+
+
+//row headers 
+.row.memberships.headers {
+	font-weight: bold;
+}
+.row.memberships {
+	
+	.field { display: inline-block; clear: both; }
+
+	//set width so all ligns up
+	margin-bottom: 10px;
+	.mem_tag { width: 380px; }
+	.mem_level { width: 50px; }
+	.mem_name { width: 200px; }
+	.login_page,
+	.logout_page { width: 200px; }
+	& > div { padding-right: 10px; }
+
+	.dashicons {
+		cursor: pointer;
+		margin: 5px 0 0 5px;
+		&:hover { color: red; }
+	}
+
+}
