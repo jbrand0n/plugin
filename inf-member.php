@@ -266,4 +266,3 @@ function inf_member_init() {
 	$inf = new Inf_Member();
 }
 add_action( 'init', 'inf_member_init', 0 ); // load before widgets_init at 1
-

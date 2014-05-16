@@ -202,14 +202,33 @@ class Inf_Member_Front {
 						exit;
 					}
 					
-					if($value['group_access'][-1] != -1){echo  '---------------';
+					if($value['group_access'][-1] != -1){
 						global $current_user;
-						print_r($current_user);
+						
+						//echo $current_user->ID;
+						$user_tags = get_user_meta($current_user->ID, 'inf-member-groups');
+						//print_r($user_tags);
+						$groups = $value['group_access'];
+						//print_r($groups);
+						$show_posts = 0;
+						
+						foreach($user_tags[0] as $key=>$tag){
+							//print_r($tag);exit;
+							if(in_array($tag, $groups))
+								$show_posts = 1;	
+						}
+						
+						if(!$show_posts){
+							echo "DSFSDFDSF";
+							exit;	
+						}
+						
+						//print_r($current_user);
 						
 					}
 				}
 			} 
-			print_r($value['group_access']);
+			//print_r($value['group_access']);
 			
             //check if post_status == publish then permissions
 

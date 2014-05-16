@@ -102,6 +102,10 @@ class Inf_Member_Settings_Tests {
     public function content() {
         global $inf, $iSDK;
 
+$user = get_user_by( 'email', 'jfwhitton@yahoo.com.au' );
+print_r($user);
+exit;
+
         if ( ! class_exists( 'Inf_Member_Settings' ) )
             require_once( dirname(__FILE__) . '/settings.php' );
 
@@ -160,8 +164,4 @@ class Inf_Member_Settings_Tests {
         echo '</pre>';
 
     }
-
-
-
-
 }

@@ -13,7 +13,7 @@ class Inf_Member_Settings {
      *     @type bool true
      * }
      */
-    public static $features = array( 'docs' => true, 'log' => true, 'tests' => true, 'members' => true, 'options' => true );
+    public static $features = array( /*'docs' => true,*/ /*'log' => true,*/ 'tests' => true, 'members' => true, 'options' => true );
 
 	/**
 	 * Add hooks
@@ -23,6 +23,9 @@ class Inf_Member_Settings {
 	public static function init() {
 		add_action( 'admin_menu', array( 'Inf_Member_Settings', 'settings_menu_items' ) );
 		add_action( 'admin_enqueue_scripts', array( 'Inf_Member_Settings', 'enqueue_scripts' ) );
+		if ( ! class_exists( 'Inf_Member_Settings_Options' ) )
+			require_once( dirname( __FILE__ ) . '/settings-options.php' );
+		add_action('wp_ajax_inf-member-action', array('Inf_Member_Settings_Options','sync'));
 	}
 
 

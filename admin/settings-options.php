@@ -32,7 +32,8 @@ class Inf_Member_Settings_Options {
      * Infusion custom form fields
      * @var
      */
-    private $form_fields;
+    //private $form_fields;
+	public $form_fields;
 
     /**
      * Initialize with an options array.
@@ -72,10 +73,14 @@ class Inf_Member_Settings_Options {
 
         if ( ! isset( $this->hook_suffix ) )
             return;
-
+		//add_action('wp_ajax_inf-member-action', array($this, 'sync'));
         add_action( 'inf_member_settings_after_header_' . $this->hook_suffix, array( 'Inf_Member_Settings_Options', 'after_header' ) );
+		
+		$obj = new Inf_Member_Settings_Options;
+		
+		include_once('pages/settings.php');
 
-        Inf_Member_Settings::settings_page_template( $this->hook_suffix, __( 'Options', 'inf-member' ) );
+        //Inf_Member_Settings::settings_page_template( $this->hook_suffix, __( 'Options', 'inf-member' ) );
     }
 
     /**
@@ -123,12 +128,14 @@ class Inf_Member_Settings_Options {
             self::PAGE_SLUG,
             array( &$class, 'settings_page' )
         );
-
-        if ( $hook_suffix ) {
+ 		if ( $hook_suffix ) {
+			add_action( 'load-' . $hook_suffix, array( &$class, 'add_script' ) );
+		}
+       /* if ( $hook_suffix ) {
             $class->hook_suffix = $hook_suffix;
             register_setting( $hook_suffix, self::OPTION_NAME, array( 'Inf_Member_Settings_Options', 'sanitize_options' ) );
             add_action( 'load-' . $hook_suffix, array( &$class, 'onload' ) );
-        }
+        }*/
 
         return $hook_suffix;
     }
@@ -156,7 +163,7 @@ class Inf_Member_Settings_Options {
 
         // General Options
         $section = 'general';
-        add_settings_section(
+        /*add_settings_section(
             $section,
             __( 'General Options', 'inf-member' ),
             '',
@@ -188,9 +195,9 @@ class Inf_Member_Settings_Options {
             $this->hook_suffix,
             $section,
             array('class' => 'login_page', 'id' => 'login_page', 'name' => self::OPTION_NAME.'[login_page]', 'default' => 'Default Login Page', 'value' => $this->get_pages_data())
-        );
+        );*/
         if( !empty($this->form_fields) ){
-            add_settings_field(
+            /*add_settings_field(
                 'pass_field',
                 'Password Field',
                 array( &$this, 'display_dropdown' ),
@@ -199,7 +206,7 @@ class Inf_Member_Settings_Options {
                 array('class' => 'pass_field', 'id' => 'pass_field',
                     'name' => self::OPTION_NAME.'[pass_field]', 'default' => 'Select Password Field', 'value' => $this->form_fields,
                     'desc' => 'If none is selected "Password" is used.')
-            );
+            );*/
         }else{
             echo '<div id="message" class="error"><p>Please add Infusion API Data to settings.</p> </div>';
         }
@@ -304,7 +311,7 @@ class Inf_Member_Settings_Options {
      * @uses get_pages
      * @return array
      */
-    private function get_pages_data(){
+    public function get_pages_data(){
         $data = array();
         $args = array(
             'sort_order' => 'ASC',
@@ -342,7 +349,8 @@ class Inf_Member_Settings_Options {
      * Members Initialize data
      * @return mixed
      */
-    private function infusion_init(){
+    //private 
+	public function infusion_init(){
         global $inf,$iMemDb;
 
         if(!isset($iMemDb))
@@ -384,5 +392,83 @@ class Inf_Member_Settings_Options {
         return $clean_options;
 
     }
+	
+	public function add_script() {
+   		wp_enqueue_script('jquery');
+        wp_enqueue_script( 'inf-member-sync', plugins_url( 'static/js/sync.js', dirname( __FILE__ ) ), array('jquery'), '1.0' );
+		$variables = array(
+								'url' => admin_url( 'admin-ajax.php' ),
+								);
+			wp_localize_script( 'inf-member-sync', 'inf_member_object',$variables );
+        //$this->settings_api_init();
+    }
+	
+	public function sync(){
+		global $inf, $iSDK;
+
+        if ( ! class_exists( 'Inf_Member_Settings' ) )
+            require_once( dirname(__FILE__) . '/settings.php' );
+
+        $inf->load_php_sdk();
+		
+		$options = get_option('inf_member_members');
+		$inf_tags = array_keys($options[member]);
+		
+		// Loop: Selected tags for Membership
+		foreach($inf_tags as $k=>$tag){
+			$returnFields = array('GroupId','ContactGroup','ContactId');
+			//$query = array('ContactGroup' => 'Order Sheet EA Sponsored');
+			$query = array('GroupId' => $tag);
+			$data = $iSDK->Data('query',"ContactGroupAssign",1000,0,$query,$returnFields);		
+			
+			$count = 0;
+			foreach($data as $key=>$val){
+				$returnFields = array('Email','Firstname','LastName');
+				$query = array('Id' => $val['ContactId']);
+				$res = $iSDK->Data('query',"Contact",1,0,$query,$returnFields);
+				$email = $username = $res[0]['Email'];
+				
+				if( username_exists($username)){					
+					$user = get_user_by( 'email', $email );
+					$user_id = $user->ID;
+					
+					$groups = get_user_meta($user_id, 'inf-member-groups');
+					if(is_array($meta) && !in_array($tag, $groups))
+						array_push($groups, $tag);
+					else
+						$groups = array($tag);						
+					
+					update_user_meta($user_id, 'inf-member-groups', $groups);					
+					wp_update_user(
+						array(
+							  'ID'          =>    $user_id,
+							  'nickname'    =>    $res[0]['Firstname']
+							)
+						  );						  
+				} else {				
+					$user_id = wp_create_user( $username, 'p@ssw0rd', $email );
+					wp_update_user(
+							array(
+							  'ID'          =>    $user_id,
+							  'nickname'    =>    $res[0]['Firstname']
+							)
+						  );
+					$groups = get_user_meta($user_id, 'inf-member-groups');
+					
+					if(is_array($groups) && !in_array($tag, $groups))
+						array_push($groups, $tag);
+					else
+						$groups = array($tag);
+					
+					update_user_meta($user_id, 'inf-member-groups', $groups);					  
+				}
+				$count++;
+				if($count >2)
+				break;
+			}
+		}
+		
+		
+	}
 
 }
