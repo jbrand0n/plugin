@@ -1,0 +1,28 @@
+- Install plugin and activate
+
+- You get a main menu "Inf Member", click on it to get this screen: 
+  http://screencast.com/t/2uswJl4h8. 
+  Need to place your subdomain from infusionsoft and api key as in screenshot, so that wp connects with infusionsoft.
+
+- Now, click on Members submenu: 
+  http://screencast.com/t/lrVBkDZQO. 
+  As explained on screenshot, select the category from which tags need to be pulled. 
+  Now, once you select the category and save, the dropdowns under heading Membership levels, will be filled with the tags, based on category you select. 
+
+  You can create as many levels you want selecting, tags from first dropdown, place level as value, 1,2,etc, name your membership level name, 
+  we have other 2 features, like you can choose to redirect users to different pages, based on their membership level once they login and logout for which you can see the two different dropdowns.
+
+- Once you have everything set with the Membership level, click on options to set general options: 
+  http://screencast.com/t/vOxw3JDz. 
+  If you see, there are different options to choose from which are self explanatory and explained on screeshot as well.
+  The only confusion is with the custom field as they mention one point related to it which was for password... need
+  more explanation on it. Right now default password is: p@ssw0rd
+
+ You can set to sync the user from infusionsoft or click on sync now to sync immediately. Once synced, user will be 
+ created depending upon which tags they are, it will be assigned to that level. 
+
+- Member protection metabox on post/page edit: http://screencast.com/t/Hct1kBeH3D
+
+- User listing: http://screencast.com/t/KN6veIoci
+
+Users are created with default password: p@ssw0rd for now..
