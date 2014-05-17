@@ -153,10 +153,10 @@ class Inf_Member_Settings_Options {
         if ( ! isset( $this->hook_suffix ) )
             return;
 
-        if(version_compare($inf->credentials['db_ver'],'0.0.0.0', '<')){
+        /*if(version_compare($inf->credentials['db_ver'],'0.0.0.0', '<')){
             echo '<div id="message" class="error"><p>Please install DB first.</p> </div>';
             return;
-        }
+        }*/
 
         //intiate infusion data
         $this->infusion_init();
@@ -463,8 +463,8 @@ class Inf_Member_Settings_Options {
 					update_user_meta($user_id, 'inf-member-groups', $groups);					  
 				}
 				$count++;
-				if($count >2)
-				break;
+				/*if($count >2)
+				break;*/
 			}
 		}
 		

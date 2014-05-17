@@ -123,7 +123,6 @@ class Inf_Member_DB {
             return;
         }
 
-
         if(!$this->check_tags() || $refresh)
             $this->populate_tags($options['tag_cat']);
 
@@ -143,7 +142,7 @@ class Inf_Member_DB {
 		
 		$row = $this->db->get_col("SELECT GroupCategoryId from {$this->pref}infm_contact_group limit 0,1");
 		
-        if($result[0] >= 1 && $row[0] == $options['tag_cat'] )
+        if($result[0] >= 1 && $row && count($row)>0 && $row[0] == $options['tag_cat']  )
             return true;
         else
             return false;

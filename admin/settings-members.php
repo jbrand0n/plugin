@@ -157,10 +157,10 @@ class Inf_Member_Settings_Members {
         if ( ! isset( $this->hook_suffix ) )
             return;
 
-        if(version_compare($inf->credentials['db_ver'],'0.0.0.0', '<')){
+        /*if(version_compare($inf->credentials['db_ver'],'0.0.0.0', '<')){
             echo '<div id="message" class="error"><p>Please install DB first.</p> </div>';
             return;
-        }
+        }*/
 
         // Initialize Member Data
         $this->members_init();

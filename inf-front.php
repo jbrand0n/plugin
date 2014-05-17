@@ -36,12 +36,18 @@ class Inf_Member_Front {
             $inf_opt = array();
         $this->inf_opt = $inf_opt;
         unset( $inf_opt );
+		
+		$inf_member_redirect = get_option( 'inf_member_members' );
+		$inf_member_redirect = $inf_member_redirect['member'];
+        if ( ! is_array( $inf_member_redirect ) )
+            $inf_member_redirect = array();
+        $this->inf_member_redirect = $inf_member_redirect;
+        unset( $inf_member_redirect );
 
-        add_filter( 'the_posts', array(&$this, 'filter_pages_posts'), 7, 2 );
-        add_filter( 'get_pages', array(&$this, 'filter_pages_posts'), 7, 2 );
+        add_filter( 'template_redirect', array(&$this, 'filter_pages_posts'), 7, 2 );
+      //  add_filter( 'get_pages', array(&$this, 'filter_pages_posts'), 7, 2 );
         add_filter( 'login_url', array(&$this, 'infmem_login_url'), 10, 2 );
-
-        //add_filter( 'login_redirect', 'i4w_login_redirect_filter', 999, 3 );
+		//add_filter( 'login_redirect', array(&$this, 'infmem_login_redirect'), 10, 3 );
         //add_action( 'login_init', 'i4w_login_init' );
 
 
@@ -175,12 +181,15 @@ class Inf_Member_Front {
 
     //@todo complete permissions
     public function filter_pages_posts($posts){
+		global $post;
+		
 		
 		
 		$options = get_option('inf_member_members');
+		$settings = get_option('inf_member_options');
 		
-		//print_r($current_user);
-        //print_r($posts);
+		//print_r($current_user);exit;
+        //print_r($posts);exit;
 		
 		//$value = get_post_meta( $posts[0]->ID, '_inf_member', true );
 		//print_r($value['group_access']);
@@ -188,46 +197,45 @@ class Inf_Member_Front {
             //return $posts;
 
         //run through each post or page
-        foreach($posts as $k => $post){
+        //foreach($posts as $k => $post){
 			$value = get_post_meta( $post->ID, '_inf_member', true );
-			if($value){
+			
+			if(!is_super_admin()){
+				if($value){
 				if($value['public_only']){
 					if(is_user_logged_in() && !is_super_admin()){
-						echo "only for public";
+						header('location: '.get_bloginfo('url'));
 						exit;
 					}
 				} else if($value['group_access']){
-					if(!is_user_logged_in()){
-						echo "only for logged in users";
-						exit;
-					}
 					
+					$value['group_access'][-1] = isset($value['group_access'][-1]) ?$value['group_access'][-1]:0;
 					if($value['group_access'][-1] != -1){
 						global $current_user;
 						
-						//echo $current_user->ID;
 						$user_tags = get_user_meta($current_user->ID, 'inf-member-groups');
-						//print_r($user_tags);
 						$groups = $value['group_access'];
-						//print_r($groups);
 						$show_posts = 0;
 						
 						foreach($user_tags[0] as $key=>$tag){
-							//print_r($tag);exit;
 							if(in_array($tag, $groups))
 								$show_posts = 1;	
 						}
-						
-						if(!$show_posts){
-							echo "DSFSDFDSF";
+					
+						//wrong membership
+						if(!$show_posts && is_user_logged_in()){
+							wp_redirect(get_permalink($settings['wrong_membership']));
+							//header('location: '.get_permalink($settings['wrong_membership']));
+							exit;
+						} elseif(!$show_posts && !is_user_logged_in() && !in_array($post->ID,$settings) ){
+							header('location: '.get_permalink($settings['non_members']));
 							exit;	
 						}
-						
-						//print_r($current_user);
 						
 					}
 				}
 			} 
+			//}
 			//print_r($value['group_access']);
 			
             //check if post_status == publish then permissions
@@ -267,6 +275,27 @@ class Inf_Member_Front {
 
         return get_permalink( $this->inf_opt['login_page'] );
     }
+	
+	/*public function infmem_login_redirect($id = 0){
+
+       // global $user;
+		return 'http://localhost/WORD/wplatest';
+		//var_dump($user);die();
+		if(isset($user->ID)){
+			$user_groups = get_user_meta($user->ID, 'inf-member-groups');
+			if ( ! is_array( $user_groups ) )
+            	$user_groups = array();
+			if(count($user_groups > 0)){
+				
+				foreach($user_groups as $key->$tag){
+					$redirect_id = $this->inf_member_redirect[$tag][login];
+				}
+			}
+		}
+		
+		if(isset($redirect_id))
+			return get_permalink( $redirect_id );
+    }*/
 
     /**
      * Login User Programmatically

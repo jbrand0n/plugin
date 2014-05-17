@@ -163,8 +163,8 @@ class Inf_Member_App_Settings {
 			array( 'label_for' => 'inf_key' )
 		);
 
-        if(Inf_Member::app_credentials_exist())
-            $this->db_install();
+        /*if(Inf_Member::app_credentials_exist())
+            $this->db_install();*/
 	}
 
 	/**

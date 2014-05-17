@@ -13,7 +13,7 @@ class Inf_Member_Settings {
      *     @type bool true
      * }
      */
-    public static $features = array( /*'docs' => true,*/ /*'log' => true,*/ 'tests' => true, 'members' => true, 'options' => true );
+    public static $features = array( /*'docs' => true,*/ /*'log' => true, 'tests' => true,*/ 'members' => true, 'options' => true );
 
 	/**
 	 * Add hooks

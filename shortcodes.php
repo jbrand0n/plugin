@@ -12,12 +12,11 @@ class Inf_Member_Shortcodes {
 	 * @uses wp_embed_register_handler()
 	 * @return void
 	 */
-	public static function init() {
+	public function __construct() {
 
 		// expose social plugin markup using WordPress Shortcode API
 		add_shortcode( 'facebook_like_button', array( 'Inf_Member_Shortcodes', 'like_button' ) );
-		
-
+		add_shortcode( 'inf_loginform', array( 'Inf_Member_Shortcodes', 'login_form' ) );
 
 	}
 
@@ -29,7 +28,27 @@ class Inf_Member_Shortcodes {
 	 * @param string $content shortcode content. no effect
 	 * @return string login form div HTML or empty string if minimum requirements not met
 	 */
-	public static function login_form( $attributes, $content = null ) {
+	 
+	 public static function login_form( $atts, $content = null ) { 
+		
+		extract( shortcode_atts( array(
+		  'redirect' => ''
+		  ), $atts ) );
+		$form = '';
+		if (!is_user_logged_in()) {
+			if($redirect) {
+				$redirect_url = $redirect;
+			} else {
+				$redirect_url = get_permalink();
+			}
+			$form = wp_login_form(array('echo' => false, 'redirect' => $redirect_url ));
+		} 
+		return $form;
+		
+	 }
+	 
+	 
+	public static function like_button( $attributes, $content = null ) {
 		global $post;
 
 		$site_options = get_option( 'facebook_like_button' );
